@@ -1,13 +1,13 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Business implements DisPlay, Serializable {
     Scanner sc = new Scanner(System.in);
-    private ArrayList<PhoneBook> phoneBooks = new ArrayList<>();
+    private  ArrayList<PhoneBook> phoneBooks = new ArrayList<>();
 
     public ArrayList<PhoneBook> getPhoneBooks() {
         return phoneBooks;
@@ -17,26 +17,97 @@ public class Business implements DisPlay, Serializable {
         this.phoneBooks = phoneBooks;
     }
 
-    public ArrayList<PhoneBook> readFile() throws IOException, ClassNotFoundException {
-        FileInputStream fileInputStream = new FileInputStream("listphonebook.dat");
-        ObjectInputStream ojb = new ObjectInputStream(fileInputStream);
-        setPhoneBooks((ArrayList<PhoneBook>) (ojb.readObject()));
-        ojb.close();
-        fileInputStream.close();
-        return getPhoneBooks();
+
+    private static final String COMMA_DELIMITER = ",";
+    private static final String NEW_LINE_SEPARATOR = "\n";
+
+
+    public void csvFile() {
+        String fileName = "contries.csv";
+        writeCsvFile(fileName);
     }
 
-    public void writeToFile() throws IOException {
-        FileOutputStream fileOutputStream = new FileOutputStream("listphonebook.dat");
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-        objectOutputStream.writeObject(getPhoneBooks());
-        objectOutputStream.close();
-        fileOutputStream.close();
+    public  void writeCsvFile(String fileName) {
+        FileWriter fileWriter = null;
+        try {
+            fileWriter = new FileWriter(fileName);
+            for (PhoneBook phoneBook : getPhoneBooks()) {
+                fileWriter.append(phoneBook.getNumberPhone());
+                fileWriter.append(COMMA_DELIMITER);
+                fileWriter.append(phoneBook.getPhonebook());
+                fileWriter.append(COMMA_DELIMITER);
+                fileWriter.append(phoneBook.getName());
+                fileWriter.append(COMMA_DELIMITER);
+                fileWriter.append(phoneBook.getSex());
+                fileWriter.append(COMMA_DELIMITER);
+                fileWriter.append(phoneBook.getAddress());
+                fileWriter.append(COMMA_DELIMITER);
+                fileWriter.append(phoneBook.getDateOfBirth());
+                fileWriter.append(COMMA_DELIMITER);
+                fileWriter.append(phoneBook.getEmail());
+                fileWriter.append(NEW_LINE_SEPARATOR);
+            }
+
+            System.out.println("CSV file was created successfully !!!");
+
+        } catch (Exception e) {
+            System.out.println("Error in CsvFileWriter !!!");
+            e.printStackTrace();
+        } finally {
+            try {
+                fileWriter.flush();
+                fileWriter.close();
+            } catch (IOException e) {
+                System.out.println("Error while flushing/closing fileWriter !!!");
+                e.printStackTrace();
+            }
+        }
     }
+
+
+
+    public void readContactFromFileCSV() {
+        String line = null;
+        FileReader fileReader = null;
+        try {
+            fileReader = new FileReader("contries.csv");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        assert fileReader != null;
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+        while (true) {
+            try {
+                if ((line = bufferedReader.readLine()) == null) break;
+            } catch (IOException exception) {
+                System.out.println(exception);
+            }
+            assert line != null;
+            String[] temp = line.split(COMMA_DELIMITER);
+            String numberPhone = temp[0];
+            String phoneBook = temp[1];
+            String name = temp[2];
+            String sex = temp[3];
+            String address = temp[4];
+            String dateOfBirth = temp[5];
+            String email = temp[6];
+            getPhoneBooks().add(new PhoneBook(name, numberPhone, address, email, dateOfBirth,phoneBook,sex));
+        }
+        try {
+            bufferedReader.close();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+        for (PhoneBook p : getPhoneBooks()) {
+            System.out.println(p.toString());
+        }
+    }
+
+
 
     @Override
-    public void addInfos() throws IOException, ClassNotFoundException {
-       setPhoneBooks(readFile());
+    public void addInfos() {
         int input = 0;
         do {
             System.out.println("chọn chức năng ");
@@ -102,8 +173,7 @@ public class Business implements DisPlay, Serializable {
 
     @Override
     public void show() throws IOException, ClassNotFoundException {
-        writeToFile();
-        readFile();
+        readContactFromFileCSV();
         int n = 0;
         do {
             System.out.println("mời chọn");

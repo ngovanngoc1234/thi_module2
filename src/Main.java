@@ -8,8 +8,6 @@ public class Main implements Serializable {
         Business business = new Business();
         int cases = 0;
         do {
-            business.readFile();
-            business.writeToFile();
             System.out.println("chương trình quản lý danh bạ ");
             System.out.println("chọn chức năng");
             System.out.println("1 : thêm mới danh bạ");
@@ -23,6 +21,7 @@ public class Main implements Serializable {
                 switch (cases) {
                     case 1:
                         business.addInfos();
+                        business.csvFile();
                         break;
                     case 2:
                         business.show();
