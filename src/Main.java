@@ -1,27 +1,29 @@
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Scanner;
 
-public class Main {
-    public static void main(String[] args) {
+public class Main implements Serializable {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         Scanner sc = new Scanner(System.in);
-        PhoneBook phoneBook = new PhoneBook();
         Business business = new Business();
         int cases = 0;
         do {
+            business.readFile();
+            business.writeToFile();
             System.out.println("chương trình quản lý danh bạ ");
             System.out.println("chọn chức năng");
             System.out.println("1 : thêm mới danh bạ");
             System.out.println("2 : xem danh bạ");
             System.out.println("3 : xóa");
             System.out.println("4 : tìm kiếm ");
-            System.out.println("5 : exit ");
+            System.out.println("5 : sửa thông tin");
+            System.out.println("6 : exit ");
             try {
-                business.readFile();
-                business.writeToFile();
                 cases = Integer.parseInt(sc.nextLine());
                 switch (cases) {
                     case 1:
-                    business.addInfos();
-                    break;
+                        business.addInfos();
+                        break;
                     case 2:
                         business.show();
                         break;
@@ -31,11 +33,14 @@ public class Main {
                     case 4:
                         business.search();
                         break;
-            }
-            }catch (Exception e ){
+                    case 5:
+                        business.edit();
+                        break;
+                }
+            } catch (Exception e) {
                 System.out.println("nhập lại đê ");
             }
-        } while (cases != 5);
+        } while (cases != 6);
     }
 
 }

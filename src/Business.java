@@ -5,31 +5,38 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Business implements DisPlay {
+public class Business implements DisPlay, Serializable {
     Scanner sc = new Scanner(System.in);
-    ArrayList<PhoneBook> phoneBooks = new ArrayList<>();
+    private ArrayList<PhoneBook> phoneBooks = new ArrayList<>();
 
-    public List<PhoneBook> readFile() throws IOException, ClassNotFoundException {
+    public ArrayList<PhoneBook> getPhoneBooks() {
+        return phoneBooks;
+    }
+
+    public void setPhoneBooks(ArrayList<PhoneBook> phoneBooks) {
+        this.phoneBooks = phoneBooks;
+    }
+
+    public ArrayList<PhoneBook> readFile() throws IOException, ClassNotFoundException {
         FileInputStream fileInputStream = new FileInputStream("listphonebook.dat");
         ObjectInputStream ojb = new ObjectInputStream(fileInputStream);
-        phoneBooks = (ArrayList<PhoneBook>) (ojb.readObject());
+        setPhoneBooks((ArrayList<PhoneBook>) (ojb.readObject()));
         ojb.close();
         fileInputStream.close();
-        return phoneBooks;
+        return getPhoneBooks();
     }
 
     public void writeToFile() throws IOException {
         FileOutputStream fileOutputStream = new FileOutputStream("listphonebook.dat");
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-        objectOutputStream.writeObject(phoneBooks);
+        objectOutputStream.writeObject(getPhoneBooks());
         objectOutputStream.close();
         fileOutputStream.close();
     }
 
     @Override
     public void addInfos() throws IOException, ClassNotFoundException {
-        readFile();
-        PhoneBook phoneBook = new PhoneBook();
+       setPhoneBooks(readFile());
         int input = 0;
         do {
             System.out.println("chọn chức năng ");
@@ -39,8 +46,52 @@ public class Business implements DisPlay {
                 input = Integer.parseInt(sc.nextLine());
                 switch (input) {
                     case 1:
-                        phoneBook.addInfo();
-                        phoneBooks.add(phoneBook);
+                        PhoneBook phoneBook = new PhoneBook();
+                        boolean check = false;
+                        do {
+                            System.out.println("nhập sdt");
+                            String s = "^(09|01[2|6|8|9])+([0-9]{8})\\b";
+                            String line = sc.nextLine();
+                            Pattern pattern = Pattern.compile(s);
+                            Matcher matcher = pattern.matcher(line);
+                            if (matcher.find()) {
+                                phoneBook.setNumberPhone(line);
+                                check = true;
+                            } else {
+                                System.out.println("Vui Lòng Không Để Trống");
+                            }
+                        } while (!check);
+
+                        System.out.println("nhập nhóm ");
+                        String nhom = sc.nextLine();
+                        phoneBook.setPhonebook(nhom);
+                        System.out.println("nhập tên");
+                        String name = sc.nextLine();
+                        phoneBook.setName(name);
+                        System.out.println("Nhập giới tính ");
+                        String sex = sc.nextLine();
+                        phoneBook.setSex(sex);
+                        System.out.println("nhập địa chỉ ");
+                        String address = sc.nextLine();
+                        phoneBook.setAddress(address);
+                        System.out.println("nhập ngày tháng năm sinh ");
+                        String date = sc.nextLine();
+                        phoneBook.setDateOfBirth(date);
+                        boolean check1 = false;
+                        do {
+                            System.out.println("nhập địa chỉ email ");
+                            String s = "^[a-z][a-z0-9_\\.]{5,32}@[a-z0-9]{2,}(\\.[a-z0-9]{2,4}){1,2}$";
+                            String line = sc.nextLine();
+                            Pattern pattern = Pattern.compile(s);
+                            Matcher matcher = pattern.matcher(line);
+                            if (matcher.find()) {
+                                check1 = true;
+                                phoneBook.setEmail(line);
+                            } else {
+                                System.out.println("Vui Lòng Không Để Trống");
+                            }
+                        } while (!check1);
+                        getPhoneBooks().add(phoneBook);
                         break;
                 }
             } catch (NullPointerException | NumberFormatException e) {
@@ -61,7 +112,7 @@ public class Business implements DisPlay {
             try {
                 n = Integer.parseInt(sc.nextLine());
                 if (n == 1) {
-                    for (PhoneBook phoneBook : phoneBooks) {
+                    for (PhoneBook phoneBook : getPhoneBooks()) {
                         System.out.println(phoneBook.toString());
                     }
                 }
@@ -87,10 +138,10 @@ public class Business implements DisPlay {
                     int index = 0;
                     Pattern pattern = Pattern.compile(regex);
                     Matcher matcher;
-                    for (int i = 0; i < phoneBooks.size(); i++) {
-                        matcher = pattern.matcher(phoneBooks.get(i).getName());
+                    for (int i = 0; i < getPhoneBooks().size(); i++) {
+                        matcher = pattern.matcher(getPhoneBooks().get(i).getName());
                         if (matcher.find()) {
-                            System.out.println("STT " + i + " : " + phoneBooks.get(i).toString());
+                            System.out.println("STT " + i + " : " + getPhoneBooks().get(i).toString());
                             index++;
                         }
                     }
@@ -120,7 +171,7 @@ public class Business implements DisPlay {
                     case 1:
                         System.out.println("Tên Cần Chỉnh :");
                         edit = sc.nextLine();
-                        for (PhoneBook name : phoneBooks) {
+                        for (PhoneBook name : getPhoneBooks()) {
                             if (edit.equals(name.getName())) {
                                 System.out.println("Chỉnh tên : ");
                                 String add = sc.nextLine();
@@ -137,7 +188,7 @@ public class Business implements DisPlay {
                     case 2:
                         System.out.println("nhập tên cần chỉnh lại số ");
                         edit = sc.nextLine();
-                        for (PhoneBook numberPhone : phoneBooks) {
+                        for (PhoneBook numberPhone : getPhoneBooks()) {
                             if (edit.equals(numberPhone.getName())) {
                                 System.out.println("chỉnh lại ");
                                 String add = sc.nextLine();
@@ -170,16 +221,16 @@ public class Business implements DisPlay {
                     System.out.println("Nhập tên cần xóa ");
                     String id = sc.nextLine();
                     PhoneBook phoneBook = null;
-                    int size = phoneBooks.size();
+                    int size = getPhoneBooks().size();
                     for (int i = 0; i < size; i++) {
                         if (phoneBooks.get(i).getName().equals(id)) {
-                            phoneBook = phoneBooks.get(i);
+                            phoneBook = getPhoneBooks().get(i);
                             break;
                         }
                     }
                     if (phoneBook != null) {
                         System.out.println("Đã Xóa Tên Là : \n" + phoneBook.getName());
-                        phoneBooks.remove(phoneBook);
+                        getPhoneBooks().remove(phoneBook);
                     } else {
                         System.out.println("Không Có tên Trong Danh Sách");
                     }

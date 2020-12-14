@@ -93,50 +93,5 @@ public class PhoneBook implements Serializable {
                 ", Email='" + Email + '\'' +
                 '}';
     }
-
-    public void addInfo() {
-        Scanner sc = new Scanner(System.in);
-        boolean check = false;
-        do {
-            System.out.println("nhập sdt");
-            String s = "^(09|01[2|6|8|9])+([0-9]{8})\\b";
-            String line = sc.nextLine();
-            Pattern pattern = Pattern.compile(s);
-            Matcher matcher = pattern.matcher(line);
-            if (matcher.find()) {
-                check = true;
-                numberPhone = line;
-            } else {
-                System.out.println("Vui Lòng Không Để Trống");
-            }
-        }while (!check);
-
-        System.out.println("nhập nhóm ");
-        phonebook = sc.nextLine();
-        System.out.println("nhập tên");
-        name = sc.nextLine();
-        System.out.println("Nhập giới tính ");
-        sex = sc.nextLine();
-        System.out.println("nhập địa chỉ ");
-        address = sc.nextLine();
-        System.out.println("nhập ngày tháng năm sinh ");
-        DateOfBirth = sc.nextLine();
-
-        boolean check1 = false;
-        do {
-            System.out.println("nhập địa chỉ email ");
-            String s = "^[a-z][a-z0-9_\\.]{5,32}@[a-z0-9]{2,}(\\.[a-z0-9]{2,4}){1,2}$";
-            String line = sc.nextLine();
-            Pattern pattern = Pattern.compile(s);
-            Matcher matcher = pattern.matcher(line);
-            if (matcher.find()) {
-                check1 = true;
-                Email = line;
-            } else {
-                System.out.println("Vui Lòng Không Để Trống");
-            }
-        }while (!check1);
-
-    }
 }
 
